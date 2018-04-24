@@ -39,7 +39,6 @@ import { executePublish } from "@atomist/sdm/common/delivery/build/local/npm/exe
 import { nodeTagger } from "@atomist/spring-automation/commands/tag/nodeTagger";
 import { AddAtomistTypeScriptHeader } from "../../blueprint/code/autofix/addAtomistHeader";
 import { AddBuildScript } from "../../blueprint/code/autofix/addBuildScript";
-import { nodeGenerator } from "../../commands/generators/node/nodeGenerator";
 import { CommonGeneratorConfig } from "../../machines/generatorConfig";
 import { CommonTypeScriptErrors } from "../team/commonTypeScriptErrors";
 import { DontImportOwnIndex } from "../team/dontImportOwnIndex";
@@ -50,49 +49,39 @@ import { DontImportOwnIndex } from "../team/dontImportOwnIndex";
  * @param options config options
  */
 export function addNodeSupport(sdm: SoftwareDeliveryMachine,
-                               options: SoftwareDeliveryMachineOptions & DockerOptions) {
-    sdm.addGenerators(() => nodeGenerator({
-            ...CommonGeneratorConfig,
-            seedRepo: "typescript-express-seed",
-            intent: "create node",
-        }))
-        .addGenerators(() => nodeGenerator({
-            ...CommonGeneratorConfig,
-            seedRepo: "minimal-node-seed",
-            intent: "create minimal node",
-        }))
-        .addNewRepoWithCodeActions(
-            tagRepo(nodeTagger),
-        )
+    options: SoftwareDeliveryMachineOptions & DockerOptions) {
+    sdm.addNewRepoWithCodeActions(
+        tagRepo(nodeTagger),
+    )
         .addAutofixes(
             AddAtomistTypeScriptHeader,
             tslintFix,
             AddBuildScript,
-        )
-    .addReviewerRegistrations(
-        CommonTypeScriptErrors,
-        DontImportOwnIndex,
+    )
+        .addReviewerRegistrations(
+            CommonTypeScriptErrors,
+            DontImportOwnIndex,
     )
         .addFingerprinterRegistrations(new PackageLockFingerprinter())
-    .addGoalImplementation("nodeVersioner", VersionGoal,
-        executeVersioner(options.projectLoader, NodeProjectVersioner))
-    .addGoalImplementation("nodeDockerBuild", DockerBuildGoal,
-        executeDockerBuild(
-            options.projectLoader,
-            async () => "", // TODO CD this is very broken but fixed on my branch
-            async () => Success, // TODO CD at least add the compile step to this
-            DefaultDockerImageNameCreator,
-            {
-                registry: options.registry,
-                user: options.user,
-                password: options.password,
+        .addGoalImplementation("nodeVersioner", VersionGoal,
+            executeVersioner(options.projectLoader, NodeProjectVersioner))
+        .addGoalImplementation("nodeDockerBuild", DockerBuildGoal,
+            executeDockerBuild(
+                options.projectLoader,
+                async () => "", // TODO CD this is very broken but fixed on my branch
+                async () => Success, // TODO CD at least add the compile step to this
+                DefaultDockerImageNameCreator,
+                {
+                    registry: options.registry,
+                    user: options.user,
+                    password: options.password,
 
-                dockerfileFinder: async () => "Dockerfile",
-            }))
-    .addGoalImplementation("nodeTag", TagGoal,
-        executeTag(options.projectLoader))
-    .addGoalImplementation("nodePublish", NpmPublishGoal,
-        executePublish(options.projectLoader, NodeProjectIdentifier));
+                    dockerfileFinder: async () => "Dockerfile",
+                }))
+        .addGoalImplementation("nodeTag", TagGoal,
+            executeTag(options.projectLoader))
+        .addGoalImplementation("nodePublish", NpmPublishGoal,
+            executePublish(options.projectLoader, NodeProjectIdentifier));
 
     sdm.goalFulfillmentMapper.addSideEffect({
         goal: StagingDockerDeploymentGoal,

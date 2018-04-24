@@ -67,7 +67,7 @@ const SdmOptions: SoftwareDeliveryMachineOptions & JavaSupportOptions & DockerOp
  * start with any of these and change it to make it your own!
  */
 
-const machineName = process.env.MACHINE_NAME ||  "cloudFoundryMachine";
+const machineName = process.env.MACHINE_NAME || "projectCreationMachine";
 const machinePath = process.env.MACHINE_PATH || "./machines";
 
 function createMachine(options: SoftwareDeliveryMachineOptions): SoftwareDeliveryMachine {

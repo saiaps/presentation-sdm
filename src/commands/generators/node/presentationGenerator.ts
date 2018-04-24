@@ -22,29 +22,26 @@ import {
     generatorHandler,
 } from "@atomist/automation-client/operations/generate/generatorToCommand";
 import { GeneratorConfig } from "@atomist/sdm";
-import { updatePackageJsonIdentification } from "../../editors/node/updatePackageJsonIdentification";
+import { updateBuildScripts, resetReadme } from "../../editors/node/updatePackageJsonIdentification";
 import { updateReadmeTitle } from "../../editors/updateReadmeTitle";
-import { NodeProjectCreationParameters } from "./NodeProjectCreationParameters";
+import { PresentationProjectCreationParameters } from "./PresentationProjectCreationParameters";
 
-export function nodeGenerator(config: GeneratorConfig,
-                              details: Partial<GeneratorCommandDetails<NodeProjectCreationParameters>> = {}): HandleCommand {
-    return generatorHandler<NodeProjectCreationParameters>(
+export function presentationGenerator(config: GeneratorConfig,
+    details: Partial<GeneratorCommandDetails<PresentationProjectCreationParameters>> = {}): HandleCommand {
+    return generatorHandler<PresentationProjectCreationParameters>(
         transformSeed,
-        () => new NodeProjectCreationParameters(config),
-        `nodeGenerator-${config.seedRepo}`,
+        () => new PresentationProjectCreationParameters(config),
+        `presGenerator-${config.seedRepo}`,
         {
-            tags: ["node", "typescript", "generator"],
+            tags: ["keynote", "generator"],
             ...details,
             intent: config.intent,
         });
 }
 
-function transformSeed(params: NodeProjectCreationParameters, ctx: HandlerContext): AnyProjectEditor<NodeProjectCreationParameters> {
+function transformSeed(params: PresentationProjectCreationParameters, ctx: HandlerContext): AnyProjectEditor<PresentationProjectCreationParameters> {
     return chainEditors(
-        updatePackageJsonIdentification(params.appName, params.target.description,
-            params.version,
-            params.screenName,
-            params.target),
-        updateReadmeTitle(params.appName, params.target.description),
+        updateBuildScripts(params.presentationFileName),
+        resetReadme(params.presentationFileName),
     );
 }

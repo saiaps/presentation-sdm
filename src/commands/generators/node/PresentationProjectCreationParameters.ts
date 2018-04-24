@@ -25,31 +25,23 @@ import { GeneratorConfig } from "@atomist/sdm";
  * Parameters for creating a Node project.
  */
 @Parameters()
-export class NodeProjectCreationParameters extends BaseSeedDrivenGeneratorParameters {
+export class PresentationProjectCreationParameters extends BaseSeedDrivenGeneratorParameters {
 
     @MappedParameter(MappedParameters.SlackUserName)
     public screenName: string;
 
     @Parameter({
-        displayName: "App name",
-        description: "Application name",
+        displayName: "Presentation file name",
+        description: "Presentation file",
         pattern: /^(@?[A-Za-z][-A-Za-z0-9_]*)$/,
         validInput: "a valid package.json application name, which starts with a lower-case letter and contains only " +
-        " alphanumeric, -, and _ characters, or `${projectName}` to use the project name",
+            " alphanumeric, -, and _ characters, or `${projectName}` to use the project name",
         minLength: 1,
         maxLength: 50,
         required: true,
         order: 51,
     })
-    public appName: string;
-
-    @Parameter({
-        displayName: "Version",
-        ...SemVerRegExp,
-        required: true,
-        order: 52,
-    })
-    public version: string = "0.1.0";
+    public presentationFileName: string;
 
     constructor(config: GeneratorConfig) {
         super();
