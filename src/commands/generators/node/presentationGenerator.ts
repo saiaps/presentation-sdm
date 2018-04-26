@@ -22,7 +22,7 @@ import {
     generatorHandler,
 } from "@atomist/automation-client/operations/generate/generatorToCommand";
 import { GeneratorConfig } from "@atomist/sdm";
-import { updateBuildScripts, resetReadme } from "../../editors/node/updatePackageJsonIdentification";
+import { updateBuildScripts, resetReadme, removeFile } from "../../editors/node/updatePackageJsonIdentification";
 import { updateReadmeTitle } from "../../editors/updateReadmeTitle";
 import { PresentationProjectCreationParameters } from "./PresentationProjectCreationParameters";
 
@@ -43,5 +43,6 @@ function transformSeed(params: PresentationProjectCreationParameters, ctx: Handl
     return chainEditors(
         updateBuildScripts(params.presentationFileName),
         resetReadme(params.presentationFileName),
+        removeFile("seamap.pdf"),
     );
 }

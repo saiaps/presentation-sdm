@@ -43,8 +43,9 @@ export function projectCreationMachine(opts: Partial<ProjectCreationMachineOptio
     sdm.addGenerators(
         () => presentationGenerator({
             ...CommonGeneratorConfig,
-            seedRepo: "typescript-express-seed",
-            intent: "create node",
+            seedOwner: "saiaps",
+            seedRepo: "seamaps",
+            intent: "create presentation repo",
         })
     );
     return sdm;

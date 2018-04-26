@@ -25,13 +25,18 @@ export function updateBuildScripts(presentationFileName: string): ProjectEditor 
         const seedPresentation = "seamaps";
         const newPresentation = presentationFileName.replace(/\.key$/, "")
         logger.info("Updating build scripts");
-        const f = await project.getFile("build.sh");
-        f.setContent((await f.getContent()).replace(seedPresentation, newPresentation));
-        const f2 = await project.getFile("key-to-pdf.applescript");
-        f2.setContent((await f.getContent()).replace(seedPresentation, newPresentation));
+        updateContent(await project.getFile("build.sh"),
+            c => c.replace(seedPresentation, newPresentation));
+        updateContent(await project.getFile("key-to-pdf.applescript"),
+            c => c.replace(seedPresentation, newPresentation));
         return successfulEdit(project, true);
     };
 }
+
+function updateContent(file, f: (s: string) => string): Promise<any> {
+    return file.getContent().then(c => file.setContent(f(c)));
+}
+
 export function resetReadme(presentationFileName: string): ProjectEditor {
     return async (project, context) => {
         const newPresentation = presentationFileName.replace(/\.key$/, "")
@@ -44,6 +49,13 @@ email Jess or ping @jessitron on twitter.
 
 License CC0, ideas are for spreading
 `);
+        return successfulEdit(project, true);
+    };
+}
+
+export function removeFile(outputFileName: string): ProjectEditor {
+    return async (project, context) => {
+        await project.deleteFile(outputFileName);
         return successfulEdit(project, true);
     };
 }
